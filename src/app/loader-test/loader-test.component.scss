@@ -1,0 +1,21 @@
+#main-loader {
+  display: block;
+  width: 500px;
+  height: 500px;
+  background-color: aqua;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  margin-top: 50px;
+}
+
+#dedicated-loader {
+  display: block;
+  width: 200px;
+  height: 200px;
+  background-color: olive;
+  position: absolute;
+  top: 500px;
+  left: 0px;
+  margin-top: 50px;
+}
