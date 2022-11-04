@@ -73,9 +73,9 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   private handleClientError(error: HttpErrorResponse) {
     const errorStatus = error.status;
     switch (errorStatus) {
-      case 400:
-        this.handleValidationError(error);
-        break;
+      // case 400:
+      //   this.handleValidationError(error);
+      //   break;
       case 401:
         this.handleAuthError(error);
         break;
