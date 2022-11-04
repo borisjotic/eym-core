@@ -15,14 +15,14 @@ export class FileHttpService extends CoreHttpService {
   // #region Download methods
 
   public downloadFileViaGet(
-    slug: string,
+    url: string,
     options?: MaestroHttpOptions
   ): Observable<Blob> {
     if (!options) {
       options = {} as MaestroHttpOptions;
     }
     options.headers = this.prepareGetHeaders(options.headers);
-    return this.get<Blob>(slug, options);
+    return this.get<Blob>(url, options);
   }
 
   private prepareGetHeaders(headers: MaestroHttpHeaders) {
@@ -33,10 +33,10 @@ export class FileHttpService extends CoreHttpService {
     });
   }
 
-  public downloadFileViaPost(slug: string, body: unknown): Observable<Blob> {
+  public downloadFileViaPost(url: string, body: unknown): Observable<Blob> {
     const options = {} as MaestroHttpOptions;
     options.headers = { 'Content-Type': 'application/json; charset=utf-8' };
-    return this.post<Blob>(slug, body, options);
+    return this.post<Blob>(url, body, options);
   }
 
   // #endregion
@@ -44,28 +44,28 @@ export class FileHttpService extends CoreHttpService {
   // #region Upload methods
 
   public uploadFileViaPost(
-    slug: string,
+    url: string,
     body: FormData,
     options: MaestroHttpOptions = null
   ): Observable<Blob> {
-    return this.post<Blob>(slug, body, options);
+    return this.post<Blob>(url, body, options);
   }
 
   public uploadFileViaPut(
-    slug: string,
+    url: string,
     body: FormData,
     headers: MaestroHttpHeaders
   ): Observable<Blob> {
     //TODO: Check the return type, based on usage of legacy methods (method "putFileFromApi")
     const options = {} as MaestroHttpOptions;
     options.headers = headers;
-    return this.put<Blob>(slug, body, options);
+    return this.put<Blob>(url, body, options);
   }
 
-  public uploadFileViaPatch(slug: string, body: unknown): Observable<Blob> {
+  public uploadFileViaPatch(url: string, body: unknown): Observable<Blob> {
     const options = {} as MaestroHttpOptions;
     options.headers = { 'Content-Type': 'application/json; charset=utf-8' };
-    return this.patch(slug, body, options);
+    return this.patch(url, body, options);
   }
 
   // #endregion
