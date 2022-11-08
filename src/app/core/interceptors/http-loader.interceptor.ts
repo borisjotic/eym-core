@@ -77,10 +77,9 @@ export class HttpLoaderInterceptor implements HttpInterceptor {
     let output = next.handle(request);
     const url = request.url.toLowerCase();
 
-    const requestIgnored =
-      this.requestForIgnore.filter((ignoreReq) =>
-        ignoreReq.toLowerCase().endsWith(url)
-      ).length === 0;
+    const requestIgnored = !this.requestForIgnore.filter((ignoreReq) =>
+      url.toLowerCase().endsWith(ignoreReq)
+    ).length;
 
     if (requestIgnored) {
       output = null;
