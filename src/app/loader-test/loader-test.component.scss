@@ -1,21 +1,19 @@
 #main-loader {
   display: block;
-  width: 500px;
-  height: 500px;
-  background-color: aqua;
+  width: 100vw;
+  height: 50px;
+  background-color: darkcyan;
   position: absolute;
-  top: 0px;
+  bottom: 0px;
   left: 0px;
-  margin-top: 50px;
 }
 
 #dedicated-loader {
   display: block;
-  width: 200px;
-  height: 200px;
-  background-color: olive;
+  width: 100vw;
+  height: 25px;
+  background-color: chocolate;
   position: absolute;
-  top: 500px;
+  bottom: 50px;
   left: 0px;
-  margin-top: 50px;
 }

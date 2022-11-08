@@ -4,29 +4,46 @@ import { map, skip } from 'rxjs/operators';
 import { HeaderName } from 'src/app/shared/enums';
 import { LoaderHeader } from 'src/app/shared/models';
 
+type LoaderKeyTimeoutState = { [uniqueKey: string]: number };
+
+// todo:
+//  - navigation & tab change
+//  - ngb-nav
+
 @Injectable({
   providedIn: 'root',
 })
-export class LoaderStateServiceService {
-  private mainLoaderState$ = new BehaviorSubject<number>(0);
-  private dedicatedLoaderState$ = new BehaviorSubject<string[]>([]);
+export class LoaderStateService {
+  //#region Class properties
+
+  private readonly maxRequestLength = 61_000; // [ms];
+
+  private mainLoaderState$ = new BehaviorSubject<LoaderKeyTimeoutState>({});
+  private dedicatedLoaderState$ = new BehaviorSubject<LoaderKeyTimeoutState>(
+    {}
+  );
+
+  //#endregion
 
   //#region Getters for main/dedicated loader
 
   public get showMainLoader$(): Observable<boolean> {
     return this.mainLoaderState$.asObservable().pipe(
       skip(1), // we're not interested in the default state
-      map((currentState: number) => currentState !== 0)
+      map(
+        (currentState: LoaderKeyTimeoutState) =>
+          Object.keys(currentState).length !== 0
+      )
     );
   }
 
-  public get dedicatedLoaders$(): Observable<string[]> {
+  public get dedicatedLoaders$(): Observable<LoaderKeyTimeoutState> {
     return this.dedicatedLoaderState$.asObservable();
   }
 
   public dedicatedLoaderFor(key: string): Observable<boolean> {
     return this.dedicatedLoaders$.pipe(
-      map((keys: string[]) => keys.indexOf(key) !== -1)
+      map((state: LoaderKeyTimeoutState) => key in state)
     );
   }
 
@@ -34,31 +51,25 @@ export class LoaderStateServiceService {
 
   //#region Toggling methods
 
-  public showMain(): void {
-    let current = this.mainLoaderState$.getValue();
+  public showMain(key?: string): string {
+    if (!key) {
+      key = this.generateUniqueKey();
+    }
+    this.modifyStateViaAdd(this.mainLoaderState$, key, 'main');
 
-    this.mainLoaderState$.next(++current);
+    return key;
   }
 
-  public hideMain(): void {
-    let current = this.mainLoaderState$.getValue();
-
-    this.mainLoaderState$.next(--current);
+  public hideMain(key: string): void {
+    this.modifyStateViaRmv(this.mainLoaderState$, key);
   }
 
   public showDedicatedFor(key: string): void {
-    let current = this.dedicatedLoaderState$.getValue();
-
-    this.dedicatedLoaderState$.next([...current, key]);
+    this.modifyStateViaAdd(this.dedicatedLoaderState$, key, 'dedicated');
   }
 
   public hideDedicatedFor(key: string): void {
-    let current = this.dedicatedLoaderState$.getValue();
-
-    const index = current.indexOf(key);
-    current.splice(index, 1);
-
-    this.dedicatedLoaderState$.next(current);
+    this.modifyStateViaRmv(this.dedicatedLoaderState$, key);
   }
 
   //#endregion
@@ -69,10 +80,7 @@ export class LoaderStateServiceService {
     const output: LoaderHeader = {};
 
     const nonDefaultValues = new Map<HeaderName, string>([
-      [
-        HeaderName.showDedicatedLoader,
-        `present-and-unique-key-${Math.random()}`, // @ervin: maybe Math.random() isn't unique enough?
-      ],
+      [HeaderName.showDedicatedLoader, this.generateUniqueKey()],
     ]);
 
     for (let headerName of names) {
@@ -89,6 +97,52 @@ export class LoaderStateServiceService {
       header,
       this.dedicatedLoaderFor(header[HeaderName.showDedicatedLoader]),
     ];
+  }
+
+  //#endregion
+
+  //#region State utility methods
+
+  private modifyStateViaAdd(
+    state$: BehaviorSubject<LoaderKeyTimeoutState>,
+    key: string,
+    state: 'main' | 'dedicated' = 'main'
+  ): LoaderKeyTimeoutState {
+    const current = state$.getValue();
+
+    current[key] = window.setTimeout(
+      () =>
+        state === 'main' ? this.hideMain(key) : this.hideDedicatedFor(key),
+      this.maxRequestLength
+    );
+
+    state$.next(current);
+
+    return current;
+  }
+
+  private modifyStateViaRmv(
+    state$: BehaviorSubject<LoaderKeyTimeoutState>,
+    key: string
+  ): LoaderKeyTimeoutState {
+    const current = state$.getValue();
+
+    if (current[key]) {
+      window.clearTimeout(current[key]);
+      delete current[key];
+
+      state$.next(current);
+    }
+
+    return current;
+  }
+
+  //#endregion
+
+  //#region Utility methods
+
+  public generateUniqueKey(): string {
+    return `present-and-unique-key-${Date.now() + Math.random()}`;
   }
 
   //#endregion

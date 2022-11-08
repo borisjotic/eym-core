@@ -4,16 +4,17 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttPLoaderInterceptor } from './core/interceptors';
+import { DedicatedLoaderDirective } from './core/directives';
+import { HttpLoaderInterceptor } from './core/interceptors';
 import { LoaderTestComponent } from './loader-test/loader-test.component';
 
 @NgModule({
-  declarations: [AppComponent, LoaderTestComponent],
+  declarations: [AppComponent, LoaderTestComponent, DedicatedLoaderDirective],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: HttPLoaderInterceptor,
+      useClass: HttpLoaderInterceptor,
       multi: true,
     },
   ],

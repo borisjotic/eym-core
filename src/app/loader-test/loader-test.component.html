@@ -1,5 +1,53 @@
 <p>loader-test works!</p>
 
-<div *ngIf="loader$ | async" id="main-loader"></div>
+<div
+  #debugPanel
+  style="display: flex; flex-direction: row; justify-content: space-between"
+>
+  <div style="color: darkcyan; width: 50%">
+    <div>main state</div>
+    <code>{{ mainState$ | async | json }}</code>
+  </div>
+  <div style="color: chocolate; width: 50%">
+    <div>dedicated state:</div>
+    <code>{{ dedicatedState$ | async | json }}</code>
+  </div>
+</div>
 
-<div *ngIf="dedicatedLoader$ | async" id="dedicated-loader"></div>
+<hr />
+<div #mainLoader *ngIf="loader$ | async" id="main-loader"></div>
+
+<div
+  #dedicatedLoader
+  *ngIf="dedicatedLoader$ | async"
+  id="dedicated-loader"
+></div>
+
+<button (click)="onTestMainLoader()">TEST main</button>
+
+<hr />
+
+<button
+  appDedicatedLoader
+  [loaderStatus]="dedicatedLoader1$ | async"
+  (click)="onTestDedicatedLoader('1')"
+>
+  DEDICATED TEST 1<sup>w/ directive</sup>
+</button>
+
+<button
+  appDedicatedLoader
+  [loaderStatus]="dedicatedLoader2$ | async"
+  (click)="onTestDedicatedLoader('2')"
+>
+  DEDICATED TEST 2<sup>w/ directive</sup>
+</button>
+<hr />
+
+<button
+  appDedicatedLoader
+  [loaderStatus]="dedicatedLoaderVisible$ | async"
+  (click)="onDedicatedLoaderEventProposal4()"
+>
+  proposal<sup>w/ directive</sup>
+</button>

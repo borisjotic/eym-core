@@ -8,16 +8,16 @@ import {
 import { Observable } from 'rxjs';
 import { HeaderName } from 'src/app/shared/enums';
 import { finalize } from 'rxjs/operators';
-import { LoaderStateServiceService } from '../services/loader-state.service';
+import { LoaderStateService } from '../services/loader-state.service';
 
 @Injectable()
-export class HttPLoaderInterceptor implements HttpInterceptor {
+export class HttpLoaderInterceptor implements HttpInterceptor {
   /**
    * Array of requests that are ignored by default, e.g. login, logout, etc...
    */
   private readonly requestForIgnore = ['v1/login', 'v2/logut'];
 
-  constructor(private loaderStateService: LoaderStateServiceService) {}
+  constructor(private loaderStateService: LoaderStateService) {}
 
   intercept(
     request: HttpRequest<unknown>,
@@ -93,10 +93,10 @@ export class HttPLoaderInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    this.loaderStateService.showMain();
+    const uniqueKey = this.loaderStateService.showMain();
 
     return next
       .handle(request)
-      .pipe(finalize(() => this.loaderStateService.hideMain()));
+      .pipe(finalize(() => this.loaderStateService.hideMain(uniqueKey)));
   }
 }

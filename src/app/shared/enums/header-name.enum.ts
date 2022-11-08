@@ -1,4 +1,4 @@
 export enum HeaderName {
-  userIgnoredLoader = 'EY-Maestro-User-Ignored-Loader',
-  showDedicatedLoader = 'EY-Maestro-Show-Dedicated-Loader',
+  userIgnoredLoader = 'PROJECT-User-Ignored-Loader',
+  showDedicatedLoader = 'PROJECT-Show-Dedicated-Loader',
 }
