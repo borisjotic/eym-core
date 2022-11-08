@@ -7,6 +7,10 @@ const routes: Routes = [
     path: 'feat/loader-interceptor-service',
     component: LoaderTestComponent,
   },
+  {
+    path: '**',
+    redirectTo: 'feat/loader-interceptor-service',
+  },
 ];
 
 @NgModule({
